@@ -1,0 +1,90 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URI")
+}
+
+model User {
+  id       String @unique @id @default(uuid())
+  username String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Game {
+  id Int @id @default(autoincrement())
+
+  rawgId          Int      @unique @map("rawg_id")
+  name            String
+  slug            String
+  description_raw String
+  backgroundImage String   @map("background-image")
+  rating          Float
+  released        DateTime
+  playtime        Float
+
+  esrbRating   EsrbRating? @relation(fields: [esrbRatingId], references: [id])
+  esrbRatingId Int         @map("esrb_rating_id")
+
+  genres Genre[]
+
+  platforms Platform[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@index([rawgId])
+  @@map("games")
+}
+
+model EsrbRating {
+  id Int @id @default(autoincrement())
+
+  name String
+  slug String
+
+  game Game[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@map("esrb_rating")
+}
+
+model Genre {
+  id Int @id @default(autoincrement())
+
+  name String
+  slug String
+
+  game Game[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@map("genres")
+}
+
+model Platform {
+  id Int @id @default(autoincrement())
+
+  name String
+  slug String
+
+  game Game[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@map("platforms")
+}

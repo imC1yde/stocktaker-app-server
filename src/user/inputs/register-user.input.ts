@@ -5,29 +5,30 @@ import {
     Length,
     Matches } from "class-validator";
 import {EMAIL_REGEX} from "@src/common/constants/regex.constants";
+import { Field } from "@nestjs/graphql";
 
 class RegisterUserInput {
     @IsNotEmpty()
     @Length(3, 24)
-    @IsString()
+    @Field(() => String)
     username: string
 
     @IsNotEmpty()
     @Matches(EMAIL_REGEX)
-    @IsString()
+    @Field(() => String)
     email: string
 
     @IsStrongPassword({
         minLength: 8,
     })
     @IsNotEmpty()
-    @IsString()
+    @Field(() => String)
     password: string
 
     @IsStrongPassword({
         minLength: 8,
     })
     @IsNotEmpty()
-    @IsString()
+    @Field(() => String)
     confirmedPassword: string
 }
