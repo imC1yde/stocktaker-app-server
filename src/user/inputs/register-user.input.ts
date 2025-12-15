@@ -1,11 +1,6 @@
-import {
-    IsNotEmpty,
-    IsString,
-    IsStrongPassword,
-    Length,
-    Matches } from "class-validator";
-import {EMAIL_REGEX} from "@src/common/constants/regex.constants";
 import { Field } from "@nestjs/graphql";
+import { EMAIL_REGEX } from "@src/common/constants/regex.constants";
+import { IsNotEmpty, IsStrongPassword, Length, Matches } from "class-validator";
 
 class RegisterUserInput {
     @IsNotEmpty()

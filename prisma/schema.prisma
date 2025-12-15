@@ -6,14 +6,21 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URI")
+  url      = env("DATABASE_URL")
 }
 
+// ------------------------------------------------
+// USER
+// ------------------------------------------------
 model User {
-  id       String @unique @id @default(uuid())
-  username String
-  email    String @unique
+  id       String  @id @unique @default(uuid())
+  username String?
+  email    String  @unique
   password String
+
+  items Item[] @relation(name: "user-items")
+
+  games Game[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
@@ -21,29 +28,52 @@ model User {
   @@map("users")
 }
 
+// ------------------------------------------------
+// CUSTOM CATALOG
+// ------------------------------------------------
+model Item {
+  id String @id @unique @default(uuid())
+
+  name        String
+  image       String
+  description String
+
+  user   User   @relation(name: "user-items", fields: [userId], references: [id])
+  userId String @unique @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedUt DateTime @updatedAt @map("updated_at")
+
+  @@map("items")
+}
+
+// ------------------------------------------------
+// GAME CATALOG
+// ------------------------------------------------
 model Game {
   id Int @id @default(autoincrement())
 
   rawgId          Int      @unique @map("rawg_id")
   name            String
   slug            String
-  description_raw String
-  backgroundImage String   @map("background-image")
+  description     String
+  backgroundImage String   @map("background_image")
   rating          Float
   released        DateTime
   playtime        Float
 
-  esrbRating   EsrbRating? @relation(fields: [esrbRatingId], references: [id])
-  esrbRatingId Int         @map("esrb_rating_id")
+  esrbRatings EsrbRating[]
 
   genres Genre[]
 
   platforms Platform[]
 
+  users User[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
 
-  @@index([rawgId])
+  @@index([rawgId, slug, rating])
   @@map("games")
 }
 
@@ -53,11 +83,12 @@ model EsrbRating {
   name String
   slug String
 
-  game Game[]
+  games Game[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
 
+  @@index([slug])
   @@map("esrb_rating")
 }
 
@@ -72,6 +103,7 @@ model Genre {
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
 
+  @@index([slug])
   @@map("genres")
 }
 
@@ -86,5 +118,6 @@ model Platform {
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
 
+  @@index([slug])
   @@map("platforms")
 }

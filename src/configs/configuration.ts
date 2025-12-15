@@ -1,4 +1,4 @@
-import {IConfiguration} from "@src/configs/configuration.interface";
+import { IConfiguration } from "@src/configs/configuration.interface";
 
 export default (): IConfiguration => ({
     app: {
