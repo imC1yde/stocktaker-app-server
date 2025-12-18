@@ -34,7 +34,7 @@ export class AuthService {
     return user.password === hashedPassword && user.email === email
   }
 
-  async register(input: RegisterUserInput): Promise<void> {
+  async register(input: RegisterUserInput): Promise<boolean> {
     const { username, email, password } = input
 
     const salt = await genSalt(10)
@@ -47,6 +47,8 @@ export class AuthService {
         password: hashed,
       }
     })
+
+    return !!user
   }
 
   async authorize(input: AuthorizeUserInput): Promise<AuthUser> {

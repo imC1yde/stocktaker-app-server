@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  username: String
+  profileImage: String
+  email: String!
+  password: String!
+}
+
+type Query {
+  authorizeUser(authorizeUser: AuthorizeUserInput!): User!
+}
+
+input AuthorizeUserInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  registerUser(registerUserInput: RegisterUserInput!): Boolean!
+}
+
+input RegisterUserInput {
+  username: String
+  email: String!
+  password: String!
+}
