@@ -3,8 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { JwtModule } from "@nestjs/jwt";
-import { AppController } from '@src/app.controller';
-import { AppService } from '@src/app.service';
 import Configuration from '@src/configs/configuration'
 import { graphqlConfig } from "@src/configs/graphql.config";
 import { jwtConfig } from '@src/configs/jwt.config';
@@ -24,8 +22,8 @@ import { PrismaModule } from '@src/prisma/prisma.module';
     GraphQLModule.forRoot<ApolloDriverConfig>(graphqlConfig),
     CoreModule
   ],
-  controllers: [ AppController ],
-  providers: [ AppService ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {
 }
