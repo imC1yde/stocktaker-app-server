@@ -6,7 +6,7 @@ require('dotenv').config()
 @Module({
   imports: [
     ConfigifyModule.forRootAsync({
-      configFilePath: [ '.env', 'external-api.yml' ]
+      configFilePath: [ '.env.local', 'external-api.yml' ]
     })
   ],
   exports: [ ConfigifyModule ]

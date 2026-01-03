@@ -1,3 +1,3 @@
 export const PASSWORD_SETTINGS = {
-  minLength: 8,
+  minLength: 8
 }

@@ -5,7 +5,7 @@ import type { Nullable } from '@src/common/utils/nullable'
 import { AuthorizeUserInput } from "@src/core/auth/inputs/authorize-user.input"
 import { RegisterUserInput } from "@src/core/auth/inputs/register-user.input"
 import { UserWithToken } from '@src/core/auth/types/user-with-token.type'
-import { mapAuthorizedUser } from '@src/core/maps/authorized-user.map'
+import { mapAuthorizedUser } from '@src/core/shared/maps/authorized-user.map'
 import { UserForAuth } from '@src/core/shared/types/user-for-auth.type'
 import { UserService } from "@src/core/user/user.service"
 import { PrismaService } from '@src/infrastructure/prisma/prisma.service'

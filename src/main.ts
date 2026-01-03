@@ -3,6 +3,11 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from '@src/app.module'
 import { AppConfig } from '@src/infrastructure/config/app.config'
 
+// todo:
+// [] - create methods for custom catalogs
+// [] - create methods for updating user data
+// [] - create game catalog factory
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule)
 

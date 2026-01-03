@@ -6,7 +6,7 @@ import { IsEnum, IsNotEmpty } from 'class-validator'
 @Configuration()
 export class AppConfig {
   @Transform(({ value }) => Number(value))
-  @Value('PORT')
+  @Value('NEST_PORT')
   public readonly port!: number
 
   @Value('NODE_ENV')
