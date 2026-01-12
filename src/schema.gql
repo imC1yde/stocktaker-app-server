@@ -25,12 +25,18 @@ type UserWithToken {
 }
 
 type Query {
-  getUserCatalog: [UserCatalogItem!]!
+  getAllUserItems: [UserCatalogItem!]!
+  getItemById(id: String!): UserCatalogItem!
 }
 
 type Mutation {
   registerUser(input: RegisterUserInput!): User!
   authorizeUser(input: AuthorizeUserInput!): UserWithToken!
+  updateUser(input: UpdateUserInput!): User!
+  deleteUser: User!
+  createUserItem(input: CreateItemInput!): UserCatalogItem!
+  updateUserItem(id: String!, input: UpdateItemInput!): UserCatalogItem!
+  deleteUserItem(id: String!): UserCatalogItem!
 }
 
 input RegisterUserInput {
@@ -42,4 +48,21 @@ input RegisterUserInput {
 input AuthorizeUserInput {
   email: String!
   password: String!
+}
+
+input UpdateUserInput {
+  username: String
+  profileImage: String
+}
+
+input CreateItemInput {
+  name: String!
+  image: String!
+  description: String
+}
+
+input UpdateItemInput {
+  name: String
+  image: String
+  description: String
 }

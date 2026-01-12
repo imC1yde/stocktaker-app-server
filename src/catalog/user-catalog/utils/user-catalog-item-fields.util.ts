@@ -1,4 +1,4 @@
-export const userCatalogItemFieldsUtil = {
+export const userCatalogItemFields = {
   id: true,
   name: true,
   image: true,

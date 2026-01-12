@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:16
+    container_name: nest_database
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+#  redis:
+#    image: redis:7-alpine
+#    container_name: nest_redis
+#    restart: always
+#    ports:
+#      - "${REDIS_PORT}:6379"
+
+#  redis-commander:
+#    image: rediscommander/redis-commander:latest
+#    container_name: redis_ui
+#    environment:
+#      - REDIS_HOSTS=local:${REDIS_HOST}:${REDIS_HOST}
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - redis
+
+  server:
+    build:
+      dockerfile: Dockerfile
+    container_name: nest_server
+    restart: on-failure
+    ports:
+      - "${NEST_PORT}:3000"
+    env_file:
+      - .env
+    depends_on:
+      - database
+#      - redis
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: rebuild
+          path: package.json

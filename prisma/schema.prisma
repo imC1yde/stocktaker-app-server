@@ -7,11 +7,9 @@ datasource db {
   url      = env("DATABASE_URI")
 }
 
-// ------------------------------------------------
-// USER
-// ------------------------------------------------
+// ---------------- USER --------------------
 model User {
-  id           String  @id @unique @default(uuid())
+  id           String  @id @db.Uuid @unique @default(uuid())
   username     String?
   profileImage String?
   email        String  @unique
@@ -19,7 +17,7 @@ model User {
 
   items Item[] @relation(name: "user-items")
 
-  games Game[]
+  games GameInventory[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
@@ -27,9 +25,7 @@ model User {
   @@map("users")
 }
 
-// ------------------------------------------------
-// CUSTOM CATALOG
-// ------------------------------------------------
+// ---------------- CUSTOM INVENTORY --------------------
 model Item {
   id String @id @unique @default(uuid())
 
@@ -38,7 +34,7 @@ model Item {
   description String?
 
   user   User?   @relation(name: "user-items", fields: [userId], references: [id])
-  userId String? @map("user_id")
+  userId String? @db.Uuid @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
@@ -46,77 +42,39 @@ model Item {
   @@map("items")
 }
 
-// ------------------------------------------------
-// GAME CATALOG
-// ------------------------------------------------
+// ---------------- GAME INVENTORY --------------------
 model Game {
-  id Int @id @default(autoincrement())
+  id String @id @db.Uuid() @unique @default(uuid())
 
-  rawgId          Int      @unique @map("rawg_id")
+  rawgId          Int       @unique @map("rawg_id")
   name            String
   slug            String
-  description     String
-  backgroundImage String   @map("background_image")
-  rating          Float
-  released        DateTime
-  playtime        Float
+  description     String?   @db.Text
+  backgroundImage String?   @map("background_image")
+  rating          Float     @default(0)
+  released        DateTime?
+  esrbRating      String?
+  genres          String[]  @default([])
+  platforms       String[]  @default([])
 
-  esrbRatings EsrbRating[]
-
-  genres Genre[]
-
-  platforms Platform[]
-
-  users User[]
+  users GameInventory[]
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedUt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([rawgId, slug, rating])
+  @@index([rating])
   @@map("games")
 }
 
-model EsrbRating {
-  id Int @id @default(autoincrement())
+model GameInventory {
+  userId String @db.Uuid @map("user_id")
+  gameId String @db.Uuid @map("game_id")
 
-  name String
-  slug String
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
 
-  games Game[]
+  isCompleted Boolean @default(false)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedUt DateTime @updatedAt @map("updated_at")
-
-  @@index([slug])
-  @@map("esrb_rating")
-}
-
-model Genre {
-  id Int @id @default(autoincrement())
-
-  name String
-  slug String
-
-  game Game[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedUt DateTime @updatedAt @map("updated_at")
-
-  @@index([slug])
-  @@map("genres")
-}
-
-model Platform {
-  id Int @id @default(autoincrement())
-
-  name String
-  slug String
-
-  game Game[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedUt DateTime @updatedAt @map("updated_at")
-
-  @@index([slug])
-  @@map("platforms")
+  @@id([gameId, userId])
+  @@map("game_inventories")
 }

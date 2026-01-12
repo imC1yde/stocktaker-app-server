@@ -6,10 +6,12 @@ import { CatalogModule } from '@src/catalog/catalog.module'
 import { CoreModule } from '@src/core/core.module'
 import { JwtConfig } from '@src/infrastructure/config/jwt.config'
 import { InfrastructureModule } from '@src/infrastructure/infrastructure.module';
+import { ValidatorModule } from './validator/validator.module';
 
 @Module({
   imports: [
     InfrastructureModule,
+    ValidatorModule,
     JwtModule.registerAsync({
       global: true,
       inject: [ JwtConfig ],
@@ -25,8 +27,7 @@ import { InfrastructureModule } from '@src/infrastructure/infrastructure.module'
       context: ({ req }) => ({ req })
     }),
     CoreModule,
-    CatalogModule,
-    InfrastructureModule
+    CatalogModule
   ],
   controllers: [],
   providers: []

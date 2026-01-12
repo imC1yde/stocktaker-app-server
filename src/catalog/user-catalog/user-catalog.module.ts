@@ -4,7 +4,10 @@ import { UserCatalogResolver } from '@src/catalog/user-catalog/user-catalog.reso
 import { UserCatalogService } from '@src/catalog/user-catalog/user-catalog.service';
 
 @Module({
-  providers: [ UserCatalogResolver, UserCatalogService ]
+  providers: [
+    UserCatalogResolver,
+    UserCatalogService
+  ]
 })
 export class UserCatalogModule {
   static register(factory: Type<ICatalogFactory>): DynamicModule {

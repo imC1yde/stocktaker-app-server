@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from "@nestjs/jwt"
 import { User } from "@src/common/types/user.type"
-import type { Nullable } from '@src/common/utils/nullable'
+import type { Nullable } from '@src/common/utils/nullable.util'
 import { AuthorizeUserInput } from "@src/core/auth/inputs/authorize-user.input"
 import { RegisterUserInput } from "@src/core/auth/inputs/register-user.input"
 import { UserWithToken } from '@src/core/auth/types/user-with-token.type'
@@ -25,13 +25,14 @@ export class AuthService {
 
   // takes input with optional username, email and password
   public async register(input: RegisterUserInput): Promise<Nullable<User>> {
-    const { password } = input
+    const { username, email, password } = input
 
     const hashed = await hash(password)
 
     const user = await this.userService.create({
-      ...input,
-      password: hashed
+      username,
+      email,
+      hashed
     })
 
     return user

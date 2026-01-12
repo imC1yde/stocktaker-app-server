@@ -1,11 +1,13 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { IMAGE_REGEX } from "@src/common/constants/regex.constants";
-import { IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
+import type { Nullable } from '@src/common/utils/nullable.util'
+import { IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from "class-validator";
 
 @InputType()
 export class CreateItemInput {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(128)
   @Field(() => String)
   readonly name: string
 
@@ -17,6 +19,7 @@ export class CreateItemInput {
 
   @IsString()
   @IsOptional()
+  @MaxLength(1024)
   @Field(() => String, { nullable: true })
-  readonly description: string
+  readonly description: Nullable<string>
 }

@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import type { Nullable } from "@src/common/utils/nullable";
+import type { Nullable } from "@src/common/utils/nullable.util";
 
 @ObjectType()
 export class User {
