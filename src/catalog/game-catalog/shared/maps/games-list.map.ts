@@ -5,6 +5,10 @@ export const mapGamesList = (inventory: any) => {
       rawgId: game.id,
       name: game.name,
       backgroundImage: game.background_image,
-      isCompleted: isCompleted
+      isCompleted: isCompleted,
+      rating: game.rating,
+      platforms: game.platforms,
+      genres: game.genres,
+      esrbRating: game.esrbRating
     }))
 }

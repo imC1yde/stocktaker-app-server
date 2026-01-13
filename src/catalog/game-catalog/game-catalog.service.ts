@@ -1,25 +1,15 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
-import { ObjectType, OmitType } from '@nestjs/graphql'
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateGameInput } from '@src/catalog/game-catalog/inputs/create-game.input'
-import type { FindAllGamesInput } from '@src/catalog/game-catalog/inputs/find-all-games.input'
+import { FindAllGamesFilterInput } from '@src/catalog/game-catalog/inputs/find-all-games.filter.input'
+import { FindAllGamesInput } from '@src/catalog/game-catalog/inputs/find-all-games.input'
 import { mapGame } from '@src/catalog/game-catalog/shared/maps/game.map'
 import { mapGamesList } from '@src/catalog/game-catalog/shared/maps/games-list.map'
+import { ListedGame } from '@src/catalog/game-catalog/shared/types/listed-game.type'
+import { IDType } from '@src/common/enums/id-type.enum'
 import { Game } from '@src/common/types/game.type'
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { PrismaService } from '@src/infrastructure/prisma/prisma.service'
-import type { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
-
-// ./shared/types/listed-game.type.ts
-@ObjectType()
-export class ListedGame extends OmitType(Game,
-  [
-    'description',
-    'rating',
-    'released',
-    'esrbRating',
-    'genres',
-    'platforms'
-  ]) {}
+import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
 
 @Injectable()
 export class GameCatalogService {
@@ -29,6 +19,9 @@ export class GameCatalogService {
   ) {}
 
   public async create(userId: string, input: CreateGameInput): Promise<Game> {
+    if (!this.dataValidator.validateId(userId, IDType.UUID))
+      throw new BadRequestException('ID пользователя неверного формата')
+
     const game = await this.prisma.game.upsert({
       where: {
         rawgId: input.rawgId
@@ -72,13 +65,23 @@ export class GameCatalogService {
     })
   }
 
-  public async findAll(id: string, input: FindAllGamesInput): Promise<ListedGame[]> {
+  public async findAll(userId: string, input: FindAllGamesInput, filter?: FindAllGamesFilterInput): Promise<ListedGame[]> {
+    if (!this.dataValidator.validateId(userId, IDType.UUID))
+      throw new BadRequestException('ID пользователя неверного формата')
+
     const { page, pageSize } = input
     const skip = pageSize * (page - 1)
 
     const inventory = await this.prisma.gameInventory.findMany({
       where: {
-        userId: id
+        userId: userId,
+        game: {
+          slug: filter?.name ? { contains: filter.name, mode: 'insensitive' } : undefined,
+          rating: filter?.rating ? { gte: filter.rating } : undefined,
+          esrbRating: filter?.esrbRating ? { equals: filter.esrbRating } : undefined,
+          genres: filter?.genres?.length ? { hasSome: filter.genres } : undefined,
+          platforms: filter?.platforms?.length ? { hasSome: filter.platforms } : undefined
+        }
       },
       include: {
         game: true
@@ -96,6 +99,12 @@ export class GameCatalogService {
   }
 
   public async findById(userId: string, id: string): Promise<Nullable<Game>> {
+    if (
+      !this.dataValidator.validateId(userId, IDType.UUID) ||
+      !this.dataValidator.validateId(id, IDType.UUID)
+    )
+      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+
     const inventory = await this.prisma.gameInventory.findUnique({
       where: {
         gameId_userId: {
@@ -117,6 +126,12 @@ export class GameCatalogService {
   }
 
   public async update(userId: string, id: string): Promise<Game> {
+    if (
+      !this.dataValidator.validateId(userId, IDType.UUID) ||
+      !this.dataValidator.validateId(id, IDType.UUID)
+    )
+      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+
     const game = await this.prisma.gameInventory.findUnique({
       where: {
         gameId_userId: {
@@ -154,6 +169,12 @@ export class GameCatalogService {
   }
 
   public async delete(userId: string, id: string): Promise<Game> {
+    if (
+      !this.dataValidator.validateId(userId, IDType.UUID) ||
+      !this.dataValidator.validateId(id, IDType.UUID)
+    )
+      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+
     try {
       const inventory = await this.prisma.gameInventory.delete({
         where: {
@@ -172,7 +193,7 @@ export class GameCatalogService {
         isCompleted: inventory.isCompleted
       })
     } catch (error) {
-      throw new ConflictException(`Удаление игры не удалось. ${error}`)
+      throw new InternalServerErrorException(`Удаление игры не удалось. ${error}`)
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+import { EsrbRating } from '@src/common/enums/esrb-rating.enum'
 import type { Nullable } from '@src/common/utils/nullable.util'
 
 @ObjectType()
@@ -27,8 +28,8 @@ export class Game {
   @Field(() => Date, { nullable: true })
   released: Nullable<Date>
 
-  @Field(() => [ String ], { nullable: true })
-  esrbRating?: Nullable<string[]>
+  @Field(() => EsrbRating, { nullable: true })
+  esrbRating?: Nullable<EsrbRating>
 
   @Field(() => [ String ])
   genres: string[]

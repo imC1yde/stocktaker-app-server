@@ -1,11 +1,12 @@
-import { Field, Float, ID } from '@nestjs/graphql'
+import { Field, Float, Int } from '@nestjs/graphql'
+import { EsrbRating } from '@src/common/enums/esrb-rating.enum'
 import type { Nullable } from '@src/common/utils/nullable.util'
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { IsArray, IsDate, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateGameInput {
   @IsInt()
   @IsNotEmpty()
-  @Field(() => ID)
+  @Field(() => Int)
   readonly rawgId: number
 
   @IsString()
@@ -28,23 +29,27 @@ export class CreateGameInput {
   @Field(() => String, { nullable: true })
   readonly backgroundImage: Nullable<string>
 
-  @IsInt()
+  @IsNumber()
   @Field(() => Float, { defaultValue: 0 })
   readonly rating: number
 
-  @IsString()
+  @IsDate()
+  @IsOptional()
   @Field(() => Date, { nullable: true })
   readonly released: Nullable<Date>
 
-  @IsArray()
-  @Field(() => [ String ], { nullable: true })
-  readonly esrbRating: Nullable<string>
+  @IsEnum(EsrbRating)
+  @IsOptional()
+  @Field(() => EsrbRating, { nullable: true })
+  readonly esrbRating: Nullable<EsrbRating>
 
   @IsArray()
+  @IsString({ each: true })
   @Field(() => [ String ])
   readonly platforms: string[]
 
   @IsArray()
+  @IsString({ each: true })
   @Field(() => [ String ])
   readonly genres: string[]
 }

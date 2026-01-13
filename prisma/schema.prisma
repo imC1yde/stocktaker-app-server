@@ -9,7 +9,7 @@ datasource db {
 
 // ---------------- USER --------------------
 model User {
-  id           String  @id @db.Uuid @unique @default(uuid())
+  id           String  @id @unique @default(uuid()) @db.Uuid
   username     String?
   profileImage String?
   email        String  @unique
@@ -34,7 +34,7 @@ model Item {
   description String?
 
   user   User?   @relation(name: "user-items", fields: [userId], references: [id])
-  userId String? @db.Uuid @map("user_id")
+  userId String? @map("user_id") @db.Uuid
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
@@ -44,18 +44,18 @@ model Item {
 
 // ---------------- GAME INVENTORY --------------------
 model Game {
-  id String @id @db.Uuid() @unique @default(uuid())
+  id String @id @unique @default(uuid()) @db.Uuid()
 
-  rawgId          Int       @unique @map("rawg_id")
+  rawgId          Int         @unique @map("rawg_id")
   name            String
   slug            String
-  description     String?   @db.Text
-  backgroundImage String?   @map("background_image")
-  rating          Float     @default(0)
+  description     String?     @db.Text
+  backgroundImage String?     @map("background_image")
+  rating          Float       @default(0)
   released        DateTime?
-  esrbRating      String?
-  genres          String[]  @default([])
-  platforms       String[]  @default([])
+  esrbRating      EsrbRating?
+  genres          String[]    @default([])
+  platforms       String[]    @default([])
 
   users GameInventory[]
 
@@ -67,8 +67,8 @@ model Game {
 }
 
 model GameInventory {
-  userId String @db.Uuid @map("user_id")
-  gameId String @db.Uuid @map("game_id")
+  userId String @map("user_id") @db.Uuid
+  gameId String @map("game_id") @db.Uuid
 
   user User @relation(fields: [userId], references: [id])
   game Game @relation(fields: [gameId], references: [id])
@@ -77,4 +77,13 @@ model GameInventory {
 
   @@id([gameId, userId])
   @@map("game_inventories")
+}
+
+enum EsrbRating {
+  EVERYONE         @map("Everyone")
+  EVERYONE_10_PLUS @map("Everyone 10+")
+  TEEN             @map("Teen")
+  MATURE           @map("Mature")
+  ADULTS_ONLY      @map("Adults Only")
+  RATING_PENDING   @map("Rating Pending")
 }
