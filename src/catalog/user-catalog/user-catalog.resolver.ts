@@ -1,7 +1,8 @@
 import { UseGuards } from "@nestjs/common"
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { ICatalogResolver } from "@src/catalog/factories/catalog-factory.interfaces"
+import { ICatalogResolver } from '@src/catalog/interfaces/catalog-resolver.interface'
 import { CreateItemInput } from '@src/catalog/user-catalog/inputs/create-item.input'
+import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
 import { UserCatalogService } from '@src/catalog/user-catalog/user-catalog.service'
 import { CurrentUser } from '@src/common/decorators/current-user.decorator'
@@ -16,31 +17,43 @@ export class UserCatalogResolver implements ICatalogResolver {
   constructor(private readonly userCatalogService: UserCatalogService) {}
 
   @Query(() => [ UserCatalogItem ], { name: 'getAllUserItems' })
-  public async getAllUserItems(@CurrentUser() user: IUserPayload): Promise<UserCatalogItem[]> {
-    return await this.userCatalogService.findAll(user.sub)
+  public async findAll(
+    @CurrentUser() user: IUserPayload,
+    @Args('filter', { nullable: true }) input: FindAllItemsInput
+  ): Promise<UserCatalogItem[]> {
+    return await this.userCatalogService.findAll(user.sub, input)
   }
 
   @Query(() => UserCatalogItem, { name: 'getItemById' })
-  public async getItemById(@Args('id') id: string): Promise<Nullable<UserCatalogItem>> {
-    return await this.userCatalogService.findById(id)
+  public async findById(
+    @CurrentUser() user: IUserPayload,
+    @Args('id') id: string
+  ): Promise<Nullable<UserCatalogItem>> {
+    return await this.userCatalogService.findById(user.sub, id)
   }
 
   @Mutation(() => UserCatalogItem, { name: 'createUserItem' })
-  public async createUserItem(@CurrentUser() user: IUserPayload,
-                              @Args('input') input: CreateItemInput
+  public async create(
+    @CurrentUser() user: IUserPayload,
+    @Args('input') input: CreateItemInput
   ): Promise<UserCatalogItem> {
     return await this.userCatalogService.create(user.sub, input)
   }
 
   @Mutation(() => UserCatalogItem, { name: 'updateUserItem' })
-  public async updateUserItem(@Args('id') id: string,
-                              @Args('input') input: UpdateItemInput
+  public async update(
+    @CurrentUser() user: IUserPayload,
+    @Args('id') id: string,
+    @Args('input') input: UpdateItemInput
   ): Promise<UserCatalogItem> {
-    return await this.userCatalogService.update(id, input)
+    return await this.userCatalogService.update(user.sub, id, input)
   }
 
   @Mutation(() => UserCatalogItem, { name: 'deleteUserItem' })
-  public async deleteUserItem(@Args('id') id: string): Promise<UserCatalogItem> {
-    return await this.userCatalogService.delete(id)
+  public async delete(
+    @CurrentUser() user: IUserPayload,
+    @Args('id') id: string
+  ): Promise<UserCatalogItem> {
+    return await this.userCatalogService.delete(user.sub, id)
   }
 }

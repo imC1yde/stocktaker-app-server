@@ -27,7 +27,7 @@ model User {
 
 // ---------------- CUSTOM INVENTORY --------------------
 model Item {
-  id String @id @unique @default(uuid())
+  id String @unique @default(uuid())
 
   name        String
   image       String
@@ -39,6 +39,7 @@ model Item {
   createdAt DateTime @default(now()) @map("created_at")
   updatedUt DateTime @updatedAt @map("updated_at")
 
+  @@index([id, userId])
   @@map("items")
 }
 

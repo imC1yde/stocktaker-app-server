@@ -1,6 +1,5 @@
-export interface ICatalogService {}
-
-export interface ICatalogResolver {}
+import { ICatalogResolver } from '@src/catalog/interfaces/catalog-resolver.interface'
+import { ICatalogService } from '@src/catalog/interfaces/catalog-service.interface'
 
 export interface ICatalogFactory<
   TService extends ICatalogService = ICatalogService,

@@ -8,4 +8,10 @@ export class DataValidator {
   public static isUUID(id: string): boolean {
     return isUUID(id)
   }
+
+  public static checkForAnyValue<TData extends Object>(input: TData): boolean {
+    return Object
+      .values(input)
+      .some(value => value !== null && value !== undefined && value !== '')
+  }
 }

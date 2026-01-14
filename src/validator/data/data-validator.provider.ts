@@ -12,4 +12,8 @@ export class DataValidatorProvider {
         return DataValidator.isUUID(id as string)
     }
   }
+
+  public checkForAnyValue<TData extends Object>(data: TData): boolean {
+    return DataValidator.checkForAnyValue(data)
+  }
 }

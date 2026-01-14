@@ -2,9 +2,11 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateGameInput } from '@src/catalog/game-catalog/inputs/create-game.input'
 import { FindAllGamesFilterInput } from '@src/catalog/game-catalog/inputs/find-all-games.filter.input'
 import { FindAllGamesInput } from '@src/catalog/game-catalog/inputs/find-all-games.input'
+import { UpdateGameInput } from '@src/catalog/game-catalog/inputs/update-game.input'
 import { mapGame } from '@src/catalog/game-catalog/shared/maps/game.map'
 import { mapGamesList } from '@src/catalog/game-catalog/shared/maps/games-list.map'
 import { ListedGame } from '@src/catalog/game-catalog/shared/types/listed-game.type'
+import { ICatalogService } from '@src/catalog/interfaces/catalog-service.interface'
 import { IDType } from '@src/common/enums/id-type.enum'
 import { Game } from '@src/common/types/game.type'
 import type { Nullable } from '@src/common/utils/nullable.util'
@@ -12,7 +14,7 @@ import { PrismaService } from '@src/infrastructure/prisma/prisma.service'
 import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
 
 @Injectable()
-export class GameCatalogService {
+export class GameCatalogService implements ICatalogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dataValidator: DataValidatorProvider
@@ -125,23 +127,12 @@ export class GameCatalogService {
     })
   }
 
-  public async update(userId: string, id: string): Promise<Game> {
+  public async update(userId: string, id: string, input: UpdateGameInput): Promise<Game> {
     if (
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
       throw new BadRequestException('ID пользователя или инвентаря неверного формата')
-
-    const game = await this.prisma.gameInventory.findUnique({
-      where: {
-        gameId_userId: {
-          gameId: id,
-          userId: userId
-        }
-      }
-    })
-
-    if (!game) throw new NotFoundException('Игра в вашем инвенторе не найдена')
 
     try {
       const inventory = await this.prisma.gameInventory.update({
@@ -152,7 +143,7 @@ export class GameCatalogService {
           }
         },
         data: {
-          isCompleted: !game.isCompleted
+          isCompleted: input.isCompleted
         },
         include: {
           game: true
