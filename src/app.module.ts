@@ -24,6 +24,9 @@ import { ValidatorModule } from './validator/validator.module';
       autoSchemaFile: 'src/schema.gql',
       playground: false,
       introspection: true,
+      buildSchemaOptions: {
+        dateScalarMode: 'isoDate'
+      },
       context: ({ req }) => ({ req })
     }),
     CoreModule,

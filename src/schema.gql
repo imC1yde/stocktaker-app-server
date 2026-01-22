@@ -2,6 +2,52 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Game {
+  id: String!
+  rawgId: Int!
+  name: String!
+  isCompleted: Boolean!
+  description: String
+  backgroundImage: String
+  rating: Float!
+  released: DateTime
+  esrbRating: EsrbRating
+  genres: [String!]!
+  platforms: [String!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum EsrbRating {
+  EVERYONE
+  EVERYONE_10_PLUS
+  TEEN
+  MATURE
+  ADULTS_ONLY
+  RATING_PENDING
+}
+
+type ListedGame {
+  id: String!
+  rawgId: Int!
+  name: String!
+  isCompleted: Boolean!
+  backgroundImage: String
+  rating: Float!
+  esrbRating: EsrbRating
+  genres: [String!]!
+  platforms: [String!]!
+}
+
+type RawgGame {
+  rawgId: Float!
+  name: String!
+  backgroundImage: String
+}
+
 type UserCatalogItem {
   id: String!
   name: String!
@@ -25,8 +71,28 @@ type UserWithToken {
 }
 
 type Query {
-  getAllUserItems: [UserCatalogItem!]!
+  getAllUserItems(filter: FindAllItemsInput): [UserCatalogItem!]!
   getItemById(id: String!): UserCatalogItem!
+  findAllGames(input: FindAllGamesInput!, filter: FindAllGamesFilterInput): [ListedGame!]!
+  findGameById(id: String!): Game!
+}
+
+input FindAllItemsInput {
+  page: Int!
+  pageSize: Int!
+}
+
+input FindAllGamesInput {
+  page: Int!
+  pageSize: Int!
+}
+
+input FindAllGamesFilterInput {
+  name: String
+  rating: Float
+  genres: [String!]
+  platforms: [String!]
+  esrbRating: EsrbRating
 }
 
 type Mutation {
@@ -37,6 +103,10 @@ type Mutation {
   createUserItem(input: CreateItemInput!): UserCatalogItem!
   updateUserItem(id: String!, input: UpdateItemInput!): UserCatalogItem!
   deleteUserItem(id: String!): UserCatalogItem!
+  updateGame(id: String!, input: UpdateGameInput!): Game!
+  deleteGame(id: String!): Game!
+  addGame(id: Int!): Game!
+  getRawgGames(input: GetRawgGamesInput!): [RawgGame!]!
 }
 
 input RegisterUserInput {
@@ -65,4 +135,14 @@ input UpdateItemInput {
   name: String
   image: String
   description: String
+}
+
+input UpdateGameInput {
+  isCompleted: Boolean!
+}
+
+input GetRawgGamesInput {
+  search: String!
+  page: Int!
+  pageSize: Int!
 }

@@ -1,6 +1,14 @@
-import { ObjectType, OmitType } from '@nestjs/graphql'
-import { Game } from '@src/common/types/game.type'
+import { Field, ObjectType } from '@nestjs/graphql'
+import type { Nullable } from '@src/common/utils/nullable.util'
 
 @ObjectType()
-export class RawgGames extends OmitType<Game, 'isCompleted' | 'description'>
-(Game, [ 'isCompleted', 'description' ]) {}
+export class RawgGame {
+  @Field(() => Number)
+  rawgId: number
+
+  @Field(() => String)
+  name: string
+
+  @Field(() => String, { nullable: true })
+  backgroundImage: Nullable<string>
+}

@@ -2,7 +2,7 @@ import { Field, InputType, Int } from '@nestjs/graphql'
 import { IsInt, IsNotEmpty, IsString } from 'class-validator'
 
 @InputType()
-export class GetAllInput {
+export class GetRawgGamesInput {
   @IsString()
   @IsNotEmpty()
   @Field(() => String)

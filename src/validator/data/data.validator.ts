@@ -14,4 +14,8 @@ export class DataValidator {
       .values(input)
       .some(value => value !== null && value !== undefined && value !== '')
   }
+
+  public static sanitizeArray<T>(array: T[]): T[] {
+    return (array ?? []).filter((item): item is T => item != null)
+  }
 }

@@ -16,4 +16,8 @@ export class DataValidatorProvider {
   public checkForAnyValue<TData extends Object>(data: TData): boolean {
     return DataValidator.checkForAnyValue(data)
   }
+
+  public sanitizeArray<T>(array: T[]): T[] {
+    return DataValidator.sanitizeArray<T>(array)
+  }
 }

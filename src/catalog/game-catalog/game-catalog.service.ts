@@ -12,17 +12,24 @@ import { Game } from '@src/common/types/game.type'
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { PrismaService } from '@src/infrastructure/prisma/prisma.service'
 import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
+import { GameValidatorProvider } from '@src/validator/game/game-validator.provider'
 
 @Injectable()
 export class GameCatalogService implements ICatalogService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly dataValidator: DataValidatorProvider
+    private readonly dataValidator: DataValidatorProvider,
+    private readonly gameValidator: GameValidatorProvider
   ) {}
 
   public async create(userId: string, input: CreateGameInput): Promise<Game> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('ID пользователя неверного формата')
+      throw new BadRequestException('Invalid user ID format')
+
+    const platforms = this.dataValidator.sanitizeArray(input.platforms)
+    const genres = this.dataValidator.sanitizeArray(input.genres)
+    const released = input.released ? input.released + 'T00:00:00.000Z' : null
+    const esrbRating = this.gameValidator.parseEsrbRating(input.esrbRating)
 
     const game = await this.prisma.game.upsert({
       where: {
@@ -33,13 +40,13 @@ export class GameCatalogService implements ICatalogService {
         rawgId: input.rawgId,
         name: input.name,
         slug: input.slug,
-        description: input.description,
-        backgroundImage: input.backgroundImage,
+        description: input.description ?? null,
+        backgroundImage: input.backgroundImage ?? null,
         rating: input.rating,
-        released: input.released,
-        esrbRating: input.esrbRating,
-        platforms: input.platforms,
-        genres: input.genres
+        released: released,
+        esrbRating: esrbRating,
+        platforms: platforms,
+        genres: genres
       }
     })
 
@@ -61,6 +68,8 @@ export class GameCatalogService implements ICatalogService {
       }
     })
 
+    console.log(game.id)
+
     return mapGame({
       data: game,
       isCompleted: inventory.isCompleted
@@ -69,7 +78,7 @@ export class GameCatalogService implements ICatalogService {
 
   public async findAll(userId: string, input: FindAllGamesInput, filter?: FindAllGamesFilterInput): Promise<ListedGame[]> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('ID пользователя неверного формата')
+      throw new BadRequestException('Invalid user ID format')
 
     const { page, pageSize } = input
     const skip = pageSize * (page - 1)
@@ -105,7 +114,7 @@ export class GameCatalogService implements ICatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+      throw new BadRequestException('Invalid user or inventory ID format')
 
     const inventory = await this.prisma.gameInventory.findUnique({
       where: {
@@ -119,7 +128,7 @@ export class GameCatalogService implements ICatalogService {
       }
     })
 
-    if (!inventory) throw new NotFoundException('Игры не найдено')
+    if (!inventory) throw new NotFoundException('Game not found')
 
     return mapGame({
       data: inventory.game,
@@ -132,7 +141,7 @@ export class GameCatalogService implements ICatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+      throw new BadRequestException('Invalid user or inventory ID format')
 
     try {
       const inventory = await this.prisma.gameInventory.update({
@@ -155,7 +164,7 @@ export class GameCatalogService implements ICatalogService {
         isCompleted: inventory.isCompleted
       })
     } catch (error) {
-      throw new InternalServerErrorException(`Обновление игры не удалось. ${error}`)
+      throw new InternalServerErrorException(`Game updating failed. ${error}`)
     }
   }
 
@@ -164,7 +173,7 @@ export class GameCatalogService implements ICatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('ID пользователя или инвентаря неверного формата')
+      throw new BadRequestException('Invalid user or inventory ID format')
 
     try {
       const inventory = await this.prisma.gameInventory.delete({
@@ -184,7 +193,7 @@ export class GameCatalogService implements ICatalogService {
         isCompleted: inventory.isCompleted
       })
     } catch (error) {
-      throw new InternalServerErrorException(`Удаление игры не удалось. ${error}`)
+      throw new InternalServerErrorException(`Game deleting failed. ${error}`)
     }
   }
 }

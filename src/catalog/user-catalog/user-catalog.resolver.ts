@@ -6,12 +6,11 @@ import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-ite
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
 import { UserCatalogService } from '@src/catalog/user-catalog/user-catalog.service'
 import { CurrentUser } from '@src/common/decorators/current-user.decorator'
-import { IsAuthGuard } from "@src/common/guards/is-auth.guard"
+import { AuthGuard } from "@src/common/guards/auth.guard"
 import type { IUserPayload } from '@src/common/interfaces/user-payload.interface'
 import { UserCatalogItem } from "@src/common/types/user-catalog-item.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 
-@UseGuards(IsAuthGuard)
 @Resolver()
 export class UserCatalogResolver implements ICatalogResolver {
   constructor(private readonly userCatalogService: UserCatalogService) {}
@@ -32,6 +31,7 @@ export class UserCatalogResolver implements ICatalogResolver {
     return await this.userCatalogService.findById(user.sub, id)
   }
 
+  @UseGuards(AuthGuard)
   @Mutation(() => UserCatalogItem, { name: 'createUserItem' })
   public async create(
     @CurrentUser() user: IUserPayload,

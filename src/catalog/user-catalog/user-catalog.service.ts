@@ -19,16 +19,14 @@ export class UserCatalogService implements ICatalogService {
 
   public async findAll(userId: string, input: FindAllItemsInput): Promise<UserCatalogItem[]> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('ID невалиден')
+      throw new BadRequestException('Invalid ID format')
 
     const { page, pageSize } = input
     const skip = pageSize * (page - 1)
 
     const items = await this.prisma.item.findMany({
       where: {
-        id_userId: {
-          userId: userId
-        }
+        userId: userId
       },
       select: userCatalogItemFields,
       take: pageSize,
@@ -43,17 +41,15 @@ export class UserCatalogService implements ICatalogService {
 
   public async findById(userId: string, id: string): Promise<Nullable<UserCatalogItem>> {
     if (
-      !this.dataValidator.validateId(userId, IDType.UUID) ||
-      !this.dataValidator.validateId(id, IDType.UUID)
+      !this.dataValidator.validateId(id, IDType.UUID) ||
+      !this.dataValidator.validateId(userId, IDType.UUID)
     )
-      throw new BadRequestException('ID невалиден')
+      throw new BadRequestException('Invalid ID format')
 
     const item = await this.prisma.item.findUnique({
       where: {
-        id_userId: {
-          id: id,
-          userId: userId
-        }
+        id: id,
+        userId: userId
       },
       select: userCatalogItemFields
     })
@@ -63,7 +59,7 @@ export class UserCatalogService implements ICatalogService {
 
   public async create(userId: string, input: CreateItemInput): Promise<UserCatalogItem> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('ID пользователя невалиден')
+      throw new BadRequestException('Invalid user ID format')
     const { name, image, description } = input;
 
     const item = await this.prisma.item.create({
@@ -89,16 +85,14 @@ export class UserCatalogService implements ICatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('Хотя бы одно из полей должно быть заполнено или ID невалиден')
+      throw new BadRequestException('Invalid ID format or input is empty')
     const { name, image, description } = input
 
     try {
       const item = await this.prisma.item.update({
         where: {
-          id_userId: {
-            id: id,
-            userId: userId
-          }
+          id: id,
+          userId: userId
         },
         data: {
           name: name ?? undefined,
@@ -110,31 +104,29 @@ export class UserCatalogService implements ICatalogService {
 
       return item
     } catch (error) {
-      throw new Error(`Предмет в инвенторе с ID ${id} не был найден`)
+      throw new Error(`Item with ID ${id} not found`)
     }
   }
 
   public async delete(userId: string, id: string): Promise<UserCatalogItem> {
     if (
-      !this.dataValidator.validateId(userId, IDType.UUID) ||
-      !this.dataValidator.validateId(id, IDType.UUID)
+      !this.dataValidator.validateId(id, IDType.UUID) ||
+      !this.dataValidator.validateId(userId, IDType.UUID)
     )
-      throw new BadRequestException('ID невалиден')
+      throw new BadRequestException('Invalid ID format')
 
     try {
       const item = await this.prisma.item.delete({
         where: {
-          id_userId: {
-            id: id,
-            userId: userId
-          }
+          id: id,
+          userId: userId
         },
         select: userCatalogItemFields
       })
 
       return item
     } catch (error) {
-      throw new NotFoundException(`Предмет с ID ${id} не найден`)
+      throw new NotFoundException(`Item with ID ${id} not found`)
     }
   }
 }

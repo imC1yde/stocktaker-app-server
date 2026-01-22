@@ -1,5 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from "@nestjs/jwt"
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { User } from "@src/common/types/user.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { AuthorizeUserInput } from "@src/core/auth/inputs/authorize-user.input"
@@ -8,13 +9,11 @@ import { UserWithToken } from '@src/core/auth/types/user-with-token.type'
 import { mapAuthorizedUser } from '@src/core/shared/maps/authorized-user.map'
 import { UserForAuth } from '@src/core/shared/types/user-for-auth.type'
 import { UserService } from "@src/core/user/user.service"
-import { PrismaService } from '@src/infrastructure/prisma/prisma.service'
 import { hash, verify } from 'argon2'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService) {}
 
@@ -24,18 +23,22 @@ export class AuthService {
   }
 
   // takes input with optional username, email and password
-  public async register(input: RegisterUserInput): Promise<Nullable<User>> {
+  public async register(input: RegisterUserInput): Promise<User | undefined> {
     const { username, email, password } = input
 
     const hashed = await hash(password)
 
-    const user = await this.userService.create({
-      username,
-      email,
-      hashed
-    })
+    try {
+      const user = await this.userService.create({
+        username,
+        email,
+        hashed
+      })
 
-    return user
+      return user
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) throw new ConflictException('User already exists')
+    }
   }
 
   // authorize user by email and password

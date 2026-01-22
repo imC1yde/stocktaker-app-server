@@ -8,7 +8,7 @@ export class RawgConfig {
   @IsNotEmpty()
   public readonly url!: string
 
-  @Value('RAWG_API_KEY')
+  @Value('external.rawg.key')
   @IsString()
   @IsNotEmpty()
   public readonly accessKey!: string

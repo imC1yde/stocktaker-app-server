@@ -19,7 +19,7 @@ export class UserService {
   ) {}
 
   public async findByEmail(email: string): Promise<Nullable<User>> {
-    if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Email неверного формата')
+    if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Invalid email format')
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -32,7 +32,7 @@ export class UserService {
   }
 
   public async findForAuth(email: string): Promise<Nullable<UserForAuth>> {
-    if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Email неверного формата')
+    if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Invalid email format')
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -65,7 +65,7 @@ export class UserService {
   // updates only username and profile image \
   // email cannot be changed after registration
   public async update(id: string, input: UpdateUserInput): Promise<User> {
-    if (!this.dataValidator.validateId(id, IDType.UUID)) throw new BadRequestException(`ID неверного формата"`)
+    if (!this.dataValidator.validateId(id, IDType.UUID)) throw new BadRequestException(`Invalid ID format`)
 
     const { username, profileImage } = input
 
@@ -83,12 +83,12 @@ export class UserService {
 
       return user
     } catch (error) {
-      throw new NotFoundException(`Пользователь не найден`)
+      throw new NotFoundException(`User not found`)
     }
   }
 
   public async delete(id: string): Promise<User> {
-    if (!this.dataValidator.validateId(id, IDType.UUID)) throw new BadRequestException(`ID неверного формата"`)
+    if (!this.dataValidator.validateId(id, IDType.UUID)) throw new BadRequestException(`Invalid Id format`)
 
     try {
       const user = await this.prisma.user.delete({
@@ -100,7 +100,7 @@ export class UserService {
 
       return user
     } catch (error) {
-      throw new NotFoundException(`Пользователь не найден`)
+      throw new NotFoundException(`User not found`)
     }
   }
 }
