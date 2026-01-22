@@ -19,26 +19,27 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
     command: server /data --console-address ":9001"
     ports:
+      - "${S3_PORT}:9000"
       - "9001:9001"
     volumes:
       - s3_data:/data
 
-#  redis:
-#    image: redis:7-alpine
-#    container_name: nest_redis
-#    restart: always
-#    ports:
-#      - "${REDIS_PORT}:6379"
+  redis:
+    image: redis:7-alpine
+    container_name: nest_redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
 
-#  redis-commander:
-#    image: rediscommander/redis-commander:latest
-#    container_name: redis_ui
-#    environment:
-#      - REDIS_HOSTS=local:${REDIS_HOST}:${REDIS_HOST}
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - redis
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: nest_redis-commander
+    environment:
+      REDIS_HOSTS: local:${REDIS_HOST}:${REDIS_HOST}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
 
   server:
     build:
@@ -51,7 +52,8 @@ services:
       - .env
     depends_on:
       - database
-#      - redis
+      - redis
+      - s3
     develop:
       watch:
         - action: sync
