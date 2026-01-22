@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { ICatalogService } from '@src/catalog/interfaces/catalog-service.interface'
 import { CreateItemInput } from "@src/catalog/user-catalog/inputs/create-item.input"
 import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
@@ -11,7 +10,7 @@ import { PrismaService } from "@src/infrastructure/prisma/prisma.service"
 import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
 
 @Injectable()
-export class UserCatalogService implements ICatalogService {
+export class UserCatalogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dataValidator: DataValidatorProvider

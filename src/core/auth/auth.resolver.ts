@@ -11,10 +11,10 @@ import { UserWithToken } from '@src/core/auth/types/user-with-token.type'
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => User, { name: "registerUser" })
+  @Mutation(() => User, { name: "registerUser", nullable: true })
   public async registerUser(@Args("input") input: RegisterUserInput):
     Promise<Nullable<User>> {
-    return await this.authService.register(input)
+    return await this.authService.register(input) || null
   }
 
   @Mutation(() => UserWithToken, { name: "authorizeUser" })

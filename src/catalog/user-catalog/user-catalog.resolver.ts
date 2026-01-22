@@ -1,6 +1,5 @@
 import { UseGuards } from "@nestjs/common"
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { ICatalogResolver } from '@src/catalog/interfaces/catalog-resolver.interface'
 import { CreateItemInput } from '@src/catalog/user-catalog/inputs/create-item.input'
 import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
@@ -12,7 +11,7 @@ import { UserCatalogItem } from "@src/common/types/user-catalog-item.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 
 @Resolver()
-export class UserCatalogResolver implements ICatalogResolver {
+export class UserCatalogResolver {
   constructor(private readonly userCatalogService: UserCatalogService) {}
 
   @Query(() => [ UserCatalogItem ], { name: 'getAllUserItems' })

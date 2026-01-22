@@ -6,7 +6,6 @@ import { UpdateGameInput } from '@src/catalog/game-catalog/inputs/update-game.in
 import { mapGame } from '@src/catalog/game-catalog/shared/maps/game.map'
 import { mapGamesList } from '@src/catalog/game-catalog/shared/maps/games-list.map'
 import { ListedGame } from '@src/catalog/game-catalog/shared/types/listed-game.type'
-import { ICatalogService } from '@src/catalog/interfaces/catalog-service.interface'
 import { IDType } from '@src/common/enums/id-type.enum'
 import { Game } from '@src/common/types/game.type'
 import type { Nullable } from '@src/common/utils/nullable.util'
@@ -15,7 +14,7 @@ import { DataValidatorProvider } from '@src/validator/data/data-validator.provid
 import { GameValidatorProvider } from '@src/validator/game/game-validator.provider'
 
 @Injectable()
-export class GameCatalogService implements ICatalogService {
+export class GameCatalogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dataValidator: DataValidatorProvider,

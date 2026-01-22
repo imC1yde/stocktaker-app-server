@@ -96,7 +96,7 @@ input FindAllGamesFilterInput {
 }
 
 type Mutation {
-  registerUser(input: RegisterUserInput!): User!
+  registerUser(input: RegisterUserInput!): User
   authorizeUser(input: AuthorizeUserInput!): UserWithToken!
   updateUser(input: UpdateUserInput!): User!
   deleteUser: User!
