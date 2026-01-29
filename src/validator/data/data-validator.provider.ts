@@ -20,4 +20,8 @@ export class DataValidatorProvider {
   public sanitizeArray<T>(array: T[]): T[] {
     return DataValidator.sanitizeArray<T>(array)
   }
+
+  public validateFile(mimetype: string, mimeToken: string): boolean {
+    return DataValidator.validateFile(mimetype, mimeToken)
+  }
 }

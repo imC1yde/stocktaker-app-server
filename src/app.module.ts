@@ -1,12 +1,13 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo"
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { GraphQLModule } from "@nestjs/graphql"
 import { JwtModule } from "@nestjs/jwt"
 import { CatalogModule } from '@src/catalog/catalog.module'
 import { CoreModule } from '@src/core/core.module'
 import { JwtConfig } from '@src/infrastructure/config/jwt.config'
-import { InfrastructureModule } from '@src/infrastructure/infrastructure.module';
-import { ValidatorModule } from './validator/validator.module';
+import { InfrastructureModule } from '@src/infrastructure/infrastructure.module'
+import { graphqlUploadExpress } from 'graphql-upload-ts'
+import { ValidatorModule } from './validator/validator.module'
 
 @Module({
   imports: [
@@ -35,4 +36,15 @@ import { ValidatorModule } from './validator/validator.module';
   controllers: [],
   providers: []
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        graphqlUploadExpress({
+          maxFileSize: 1000,
+          maxFiles: 2
+        })
+      )
+      .forRoutes('graphql')
+  }
+}

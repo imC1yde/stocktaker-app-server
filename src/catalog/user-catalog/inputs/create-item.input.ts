@@ -1,7 +1,6 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { IMAGE_REGEX } from "@src/common/constants/regex.constants";
+import { Field, InputType } from "@nestjs/graphql"
 import type { Nullable } from '@src/common/utils/nullable.util'
-import { IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator"
 
 @InputType()
 export class CreateItemInput {
@@ -10,12 +9,6 @@ export class CreateItemInput {
   @MaxLength(128)
   @Field(() => String)
   readonly name: string
-
-  @IsString()
-  @IsNotEmpty()
-  @Matches(IMAGE_REGEX)
-  @Field(() => String)
-  readonly image: string
 
   @IsString()
   @IsOptional()

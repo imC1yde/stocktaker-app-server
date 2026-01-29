@@ -18,4 +18,8 @@ export class DataValidator {
   public static sanitizeArray<T>(array: T[]): T[] {
     return (array ?? []).filter((item): item is T => item != null)
   }
+
+  public static validateFile(mimetype: string, mimeToken: string): boolean {
+    return mimetype.startsWith(mimeToken)
+  }
 }

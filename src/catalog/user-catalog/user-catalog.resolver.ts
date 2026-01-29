@@ -9,10 +9,14 @@ import { AuthGuard } from "@src/common/guards/auth.guard"
 import type { IUserPayload } from '@src/common/interfaces/user-payload.interface'
 import { UserCatalogItem } from "@src/common/types/user-catalog-item.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
+import { type FileUpload, GraphQLUpload } from 'graphql-upload-ts'
 
+@UseGuards(AuthGuard)
 @Resolver()
 export class UserCatalogResolver {
-  constructor(private readonly userCatalogService: UserCatalogService) {}
+  constructor(
+    private readonly userCatalogService: UserCatalogService
+  ) {}
 
   @Query(() => [ UserCatalogItem ], { name: 'getAllUserItems' })
   public async findAll(
@@ -30,22 +34,24 @@ export class UserCatalogResolver {
     return await this.userCatalogService.findById(user.sub, id)
   }
 
-  @UseGuards(AuthGuard)
   @Mutation(() => UserCatalogItem, { name: 'createUserItem' })
   public async create(
     @CurrentUser() user: IUserPayload,
-    @Args('input') input: CreateItemInput
+    @Args('input') input: CreateItemInput,
+    @Args('image', { type: () => GraphQLUpload }) image: FileUpload
   ): Promise<UserCatalogItem> {
-    return await this.userCatalogService.create(user.sub, input)
+    return await this.userCatalogService.create(user.sub, input, image)
   }
+
 
   @Mutation(() => UserCatalogItem, { name: 'updateUserItem' })
   public async update(
     @CurrentUser() user: IUserPayload,
     @Args('id') id: string,
-    @Args('input') input: UpdateItemInput
+    @Args('input') input: UpdateItemInput,
+    @Args('image', { type: () => GraphQLUpload }) image: FileUpload
   ): Promise<UserCatalogItem> {
-    return await this.userCatalogService.update(user.sub, id, input)
+    return await this.userCatalogService.update(user.sub, id, input, image)
   }
 
   @Mutation(() => UserCatalogItem, { name: 'deleteUserItem' })
