@@ -6,14 +6,13 @@ import { FindAllGamesInput } from '@src/catalog/game-catalog/inputs/find-all-gam
 import { UpdateGameInput } from '@src/catalog/game-catalog/inputs/update-game.input'
 import { RawgDomainService } from '@src/catalog/game-catalog/rawg/rawg-domain.service'
 import { mapResultToInput } from '@src/catalog/game-catalog/shared/maps/result-to-input.map'
-import { ListedGame } from '@src/catalog/game-catalog/shared/types/listed-game.type'
+import { PaginatedGames } from '@src/catalog/game-catalog/shared/types/paginated-games.type'
 import { CurrentUser } from '@src/common/decorators/current-user.decorator'
 import { AuthGuard } from '@src/common/guards/auth.guard'
 import type { IUserPayload } from '@src/common/interfaces/user-payload.interface'
 import { Game } from '@src/common/types/game.type'
 import type { Nullable } from '@src/common/utils/nullable.util'
 
-// 758455 3328 43050
 @UseGuards(AuthGuard)
 @Resolver()
 export class GameCatalogResolver {
@@ -22,12 +21,12 @@ export class GameCatalogResolver {
     private readonly rawgService: RawgDomainService
   ) {}
 
-  @Query(() => [ ListedGame ], { name: 'findAllGames' })
+  @Query(() => [ PaginatedGames ], { name: 'findAllGames' })
   public async findAll(
     @CurrentUser() user: IUserPayload,
     @Args('input') input: FindAllGamesInput,
     @Args('filter', { nullable: true }) filter?: FindAllGamesFilterInput
-  ): Promise<ListedGame[]> {
+  ): Promise<PaginatedGames> {
     return await this.gameCatalogService.findAll(user.sub, input, filter)
   }
 

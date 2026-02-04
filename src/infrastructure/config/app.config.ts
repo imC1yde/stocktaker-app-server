@@ -6,8 +6,8 @@ export class AppConfig {
   @Transform(({ value }) => Number(value))
   @Value('NEST_PORT')
   public readonly port!: number
-  
-  @Value('ORIGIN_URL')
+
+  @Value('VITE_ORIGIN_URL')
   public readonly originUrl!: string
 }
 

@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { CreateItemInput } from '@src/catalog/user-catalog/inputs/create-item.input'
 import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
+import { PaginatedItems } from '@src/catalog/user-catalog/shared/types/paginated-items.type'
 import { UserCatalogService } from '@src/catalog/user-catalog/user-catalog.service'
 import { CurrentUser } from '@src/common/decorators/current-user.decorator'
 import { AuthGuard } from "@src/common/guards/auth.guard"
@@ -18,11 +19,11 @@ export class UserCatalogResolver {
     private readonly userCatalogService: UserCatalogService
   ) {}
 
-  @Query(() => [ UserCatalogItem ], { name: 'getAllUserItems' })
+  @Query(() => [ PaginatedItems ], { name: 'getAllUserItems' })
   public async findAll(
     @CurrentUser() user: IUserPayload,
     @Args('filter', { nullable: true }) input: FindAllItemsInput
-  ): Promise<UserCatalogItem[]> {
+  ): Promise<PaginatedItems> {
     return await this.userCatalogService.findAll(user.sub, input)
   }
 

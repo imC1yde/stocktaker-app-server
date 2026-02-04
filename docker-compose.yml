@@ -35,7 +35,7 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: nest_redis-commander
     environment:
-      REDIS_HOSTS: local:${REDIS_HOST}:${REDIS_HOST}
+      REDIS_HOSTS: local:${REDIS_HOST}:${REDIS_PORT}
     ports:
       - "8081:8081"
     depends_on:
@@ -44,6 +44,7 @@ services:
   server:
     build:
       dockerfile: Dockerfile
+    command: ["npm", "run", "dev"]
     container_name: nest_server
     restart: on-failure
     ports:

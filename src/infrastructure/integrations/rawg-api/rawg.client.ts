@@ -18,14 +18,14 @@ export class RawgClient {
     private readonly httpService: HttpService
   ) {}
 
-  public getData<TData>(url: string, requestConfig: AxiosRequestConfig, requestOptions: IRequestOptions): Observable<TData> {
+  public getData<TData>(url: string, requestConfig: AxiosRequestConfig, requestOptions?: IRequestOptions): Observable<TData> {
     if (!requestConfig.params.key) throw new BadRequestException('Key must be provided')
 
     return this.httpService
       .get(url, requestConfig)
       .pipe(
-        timeout(requestOptions.timeout),
-        retry(requestOptions.retryConfig),
+        timeout(requestOptions?.timeout || 1),
+        retry(requestOptions?.retryConfig || {}),
         map((res) => res.data),
         catchError((err) => {
           const status = err.response?.status || err.status

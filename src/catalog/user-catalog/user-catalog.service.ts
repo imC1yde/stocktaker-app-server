@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateItemInput } from "@src/catalog/user-catalog/inputs/create-item.input"
 import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
 import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
-import { userCatalogItemFields } from "@src/catalog/user-catalog/utils/user-catalog-item-fields.util"
+import { PaginatedItems } from '@src/catalog/user-catalog/shared/types/paginated-items.type'
+import { userCatalogItemFields } from "@src/catalog/user-catalog/shared/utils/user-catalog-item-fields.util"
 import { IDType } from '@src/common/enums/id-type.enum'
 import { UserCatalogItem } from "@src/common/types/user-catalog-item.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
@@ -19,35 +20,49 @@ export class UserCatalogService {
     private readonly dataValidator: DataValidatorProvider
   ) {}
 
-  public async findAll(userId: string, input: FindAllItemsInput): Promise<UserCatalogItem[]> {
+  public async findAll(userId: string, input: FindAllItemsInput): Promise<PaginatedItems> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
       throw new BadRequestException('Invalid ID format')
 
     const { page, pageSize } = input
     const skip = pageSize * (page - 1)
 
-    const items = await this.prisma.item.findMany({
-      where: {
-        userId: userId
-      },
-      select: userCatalogItemFields,
-      take: pageSize,
-      skip: skip,
-      orderBy: {
-        name: 'asc'
-      }
-    })
+    const [ items, count ] = await Promise.all([
+      this.prisma.item.findMany({
+        where: {
+          userId: userId
+        },
+        select: userCatalogItemFields,
+        take: pageSize,
+        skip: skip,
+        orderBy: {
+          name: 'asc'
+        }
+      }),
+      this.prisma.item.count({
+        where: {
+          userId: userId
+        }
+      })
+    ])
 
-    items.map(async item => {
-      const imageUrl = await this.s3Service.getImage(item.image)
+    const totalPages = Math.ceil(count / pageSize)
+    const mappedItems = await Promise.all(
+      items.map(async item => {
+        const imageUrl = await this.s3Service.getImage(item.image)
 
-      return {
-        ...item,
-        image: imageUrl
-      }
-    })
+        return {
+          ...item,
+          image: imageUrl
+        }
+      }))
 
-    return items
+    return {
+      items: mappedItems,
+      totalCount: count,
+      totalPages: totalPages,
+      hasNextPage: page < totalPages
+    }
   }
 
   public async findById(userId: string, id: string): Promise<Nullable<UserCatalogItem>> {

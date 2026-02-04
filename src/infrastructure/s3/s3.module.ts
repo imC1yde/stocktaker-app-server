@@ -6,6 +6,9 @@ import { S3Service } from '@src/infrastructure/s3/s3.service'
   providers: [
     S3Provider,
     S3Service
+  ],
+  exports: [
+    S3Service
   ]
 })
 export class S3Module {}
