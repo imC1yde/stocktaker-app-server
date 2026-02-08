@@ -2,6 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type GameListResponse {
+  id: String!
+  name: String!
+  backgroundImage: String!
+  isCompleted: Boolean!
+  rating: Float!
+  platforms: [String!]!
+  genres: [String!]!
+  esrbRating: String
+}
+
+type PaginatedGames {
+  data: [GameListResponse!]!
+  totalCount: Int!
+  totalPages: Int!
+  hasNextPage: Boolean!
+}
+
 type Game {
   id: String!
   rawgId: Int!
@@ -30,18 +48,6 @@ enum EsrbRating {
   RATING_PENDING
 }
 
-type ListedGame {
-  id: String!
-  rawgId: Int!
-  name: String!
-  isCompleted: Boolean!
-  backgroundImage: String
-  rating: Float!
-  esrbRating: EsrbRating
-  genres: [String!]!
-  platforms: [String!]!
-}
-
 type RawgGame {
   rawgId: Float!
   name: String!
@@ -55,25 +61,30 @@ type UserCatalogItem {
   description: String
 }
 
+type PaginatedItems {
+  data: [UserCatalogItem!]!
+  totalCount: Int!
+  totalPages: Int!
+  hasNextPage: Boolean!
+}
+
 type User {
-  id: String
+  id: String!
   username: String
-  profileImage: String
   email: String!
 }
 
 type UserWithToken {
-  id: String
+  id: String!
   username: String
-  profileImage: String
   email: String!
   token: String!
 }
 
 type Query {
-  getAllUserItems(filter: FindAllItemsInput): [UserCatalogItem!]!
+  getAllUserItems(filter: FindAllItemsInput): [PaginatedItems!]!
   getItemById(id: String!): UserCatalogItem!
-  findAllGames(input: FindAllGamesInput!, filter: FindAllGamesFilterInput): [ListedGame!]!
+  findAllGames(input: FindAllGamesInput!, filter: FindAllGamesFilterInput): [PaginatedGames!]!
   findGameById(id: String!): Game!
 }
 
@@ -100,8 +111,8 @@ type Mutation {
   authorizeUser(input: AuthorizeUserInput!): UserWithToken!
   updateUser(input: UpdateUserInput!): User!
   deleteUser: User!
-  createUserItem(input: CreateItemInput!): UserCatalogItem!
-  updateUserItem(id: String!, input: UpdateItemInput!): UserCatalogItem!
+  createUserItem(input: CreateItemInput!, image: Upload!): UserCatalogItem!
+  updateUserItem(id: String!, input: UpdateItemInput!, image: Upload!): UserCatalogItem!
   deleteUserItem(id: String!): UserCatalogItem!
   updateGame(id: String!, input: UpdateGameInput!): Game!
   deleteGame(id: String!): Game!
@@ -122,18 +133,18 @@ input AuthorizeUserInput {
 
 input UpdateUserInput {
   username: String
-  profileImage: String
 }
 
 input CreateItemInput {
   name: String!
-  image: String!
   description: String
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 input UpdateItemInput {
   name: String
-  image: String
   description: String
 }
 

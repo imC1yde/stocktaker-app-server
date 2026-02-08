@@ -8,14 +8,16 @@ import { IDType } from '@src/common/enums/id-type.enum'
 import { UserCatalogItem } from "@src/common/types/user-catalog-item.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { PrismaService } from "@src/infrastructure/prisma/prisma.service"
+import { RedisService } from '@src/infrastructure/redis/redis.service'
 import { S3Service } from '@src/infrastructure/s3/s3.service'
-import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
+import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
 import { FileUpload } from 'graphql-upload-ts'
 
 @Injectable()
 export class UserCatalogService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
     private readonly s3Service: S3Service,
     private readonly dataValidator: DataValidatorProvider
   ) {}
@@ -72,7 +74,11 @@ export class UserCatalogService {
     )
       throw new BadRequestException('Invalid ID format')
 
-    const item = await this.prisma.item.findUnique({
+    const cacheKey = `item-${userId}:${id}`
+    const cachedItem = await this.redis.get<UserCatalogItem>(cacheKey)
+    if (cachedItem) return cachedItem
+
+    let item = await this.prisma.item.findUnique({
       where: {
         id: id,
         userId: userId
@@ -82,11 +88,14 @@ export class UserCatalogService {
 
     if (!item) return null
     const imageUrl = await this.s3Service.getImage(item.image)
-
-    return {
+    item = {
       ...item,
       image: imageUrl
-    }
+    } as const
+
+    await this.redis.set<UserCatalogItem>(cacheKey, item)
+
+    return item
   }
 
   public async create(userId: string, input: CreateItemInput, image: FileUpload): Promise<UserCatalogItem> {
@@ -158,6 +167,11 @@ export class UserCatalogService {
         },
         select: userCatalogItemFields
       })
+
+      await this.s3Service.delete(item.image)
+
+      const cacheKey = `item-${userId}:${id}`
+      await this.redis.delete(cacheKey)
 
       return item
     } catch (error) {

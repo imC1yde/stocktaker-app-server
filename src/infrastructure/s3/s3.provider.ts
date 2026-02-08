@@ -1,4 +1,4 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { S3Config } from '@src/infrastructure/config/s3.config'
@@ -7,18 +7,17 @@ import { v4 as uuidv4 } from 'uuid'
 
 @Injectable()
 export class S3Provider {
-  private readonly region: string
   private readonly bucket: string
   private readonly client: S3Client
 
   constructor(
     private readonly s3Config: S3Config
   ) {
-    this.region = this.s3Config.region
     this.bucket = this.s3Config.bucket
+    const region = this.s3Config.region
 
     this.client = new S3Client({
-      region: this.region,
+      region: region,
       credentials: {
         accessKeyId: this.s3Config.accessKey,
         secretAccessKey: this.s3Config.secretKey
@@ -79,6 +78,21 @@ export class S3Provider {
       return true
     } catch (error) {
       throw new NotFoundException(`File has not found to update! ${error.message}`)
+    }
+  }
+
+  public async delete(key: string): Promise<boolean> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.bucket,
+      Key: key
+    })
+
+    try {
+      await this.client.send(command)
+
+      return true
+    } catch (error) {
+      throw new NotFoundException(`File has not found to delete! ${error.message}`)
     }
   }
 }

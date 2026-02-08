@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { S3Provider } from '@src/infrastructure/s3/s3.provider'
-import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
+import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
 import { FileUpload } from 'graphql-upload-ts'
 import { Readable } from 'stream'
 
@@ -37,5 +37,9 @@ export class S3Service {
       throw new BadRequestException('Invalid file mimetype!')
 
     return await this.s3.update(stream, key)
+  }
+
+  public async delete(key: string): Promise<boolean> {
+    return await this.s3.delete(key)
   }
 }

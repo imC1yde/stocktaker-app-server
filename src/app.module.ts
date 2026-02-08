@@ -4,8 +4,8 @@ import { GraphQLModule } from "@nestjs/graphql"
 import { CatalogModule } from '@src/catalog/catalog.module'
 import { CoreModule } from '@src/core/core.module'
 import { InfrastructureModule } from '@src/infrastructure/infrastructure.module'
+import { ValidatorModule } from '@src/validation/validator.module'
 import { graphqlUploadExpress } from 'graphql-upload-ts'
-import { ValidatorModule } from './validator/validator.module'
 
 @Module({
   imports: [

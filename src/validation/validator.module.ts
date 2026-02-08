@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
-import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
-import { GameValidatorProvider } from '@src/validator/game/game-validator.provider'
-import { UserValidatorProvider } from '@src/validator/user/user-validator.provider'
+import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
+import { GameValidatorProvider } from '@src/validation/game/game-validator.provider'
+import { UserValidatorProvider } from '@src/validation/user/user-validator.provider'
 
 @Global()
 @Module({

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { EsrbRating } from '@prisma/client'
 import type { Nullable } from '@src/common/utils/nullable.util'
-import { GameValidator } from '@src/validator/game/game.validator'
+import { GameValidator } from '@src/validation/game/game.validator'
 
 @Injectable()
 export class GameValidatorProvider {

@@ -1,1 +1,32 @@
+# Dependencies
 node_modules
+pnpm-lock.yaml
+
+# Building
+dist
+build
+.npm
+*.log
+
+# Configs
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Docker
+Dockerfile
+docker-compose*
+.dockerignore
+
+# Prisma
+prisma/migrations

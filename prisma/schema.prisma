@@ -9,11 +9,10 @@ datasource db {
 
 // ---------------- USER --------------------
 model User {
-  id           String  @id @unique @default(uuid()) @db.Uuid
-  username     String?
-  profileImage String?
-  email        String  @unique
-  password     String
+  id       String  @id @unique @default(uuid()) @db.Uuid
+  username String?
+  email    String  @unique
+  password String
 
   items Item[] @relation(name: "user-items")
 

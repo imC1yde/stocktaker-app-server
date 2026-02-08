@@ -4,11 +4,11 @@ import { User } from "@src/common/types/user.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { UserForAuth } from '@src/core/shared/types/user-for-auth.type'
 import { CreateUserInput } from '@src/core/user/inputs/create-user.input'
-import { UpdateUserInput } from '@src/core/user/inputs/update-user.input'
+import type { UpdateUserInput } from '@src/core/user/inputs/update-user.input'
 import { userFields } from '@src/core/user/utils/user-fields.util'
 import { PrismaService } from "@src/infrastructure/prisma/prisma.service"
-import { DataValidatorProvider } from '@src/validator/data/data-validator.provider'
-import { UserValidatorProvider } from '@src/validator/user/user-validator.provider'
+import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
+import { UserValidatorProvider } from '@src/validation/user/user-validator.provider'
 
 @Injectable()
 export class UserService {
@@ -17,19 +17,6 @@ export class UserService {
     private readonly userValidator: UserValidatorProvider,
     private readonly dataValidator: DataValidatorProvider
   ) {}
-
-  public async findByEmail(email: string): Promise<Nullable<User>> {
-    if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Invalid email format')
-
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: email
-      },
-      select: userFields
-    })
-
-    return user
-  }
 
   public async findForAuth(email: string): Promise<Nullable<UserForAuth>> {
     if (!this.userValidator.validateUserEmail(email)) throw new BadRequestException('Invalid email format')
@@ -62,12 +49,12 @@ export class UserService {
     return user
   }
 
-  // updates only username and profile image \
-  // email cannot be changed after registration
+  // Updates only username and profile image. \
+  // Email cannot be changed after registration
   public async update(id: string, input: UpdateUserInput): Promise<User> {
     if (!this.dataValidator.validateId(id, IDType.UUID)) throw new BadRequestException(`Invalid ID format`)
 
-    const { username, profileImage } = input
+    const { username } = input
 
     try {
       const user = await this.prisma.user.update({
@@ -75,8 +62,7 @@ export class UserService {
           id: id
         },
         data: {
-          username: username,
-          profileImage: profileImage
+          username: username
         },
         select: userFields
       })

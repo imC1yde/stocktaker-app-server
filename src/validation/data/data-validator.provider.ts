@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { IDType } from '@src/common/enums/id-type.enum'
-import { DataValidator } from '@src/validator/data/data.validator'
+import { DataValidator } from '@src/validation/data/data.validator'
 
 @Injectable()
 export class DataValidatorProvider {

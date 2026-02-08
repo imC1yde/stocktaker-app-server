@@ -3,14 +3,11 @@ import type { Nullable } from "@src/common/utils/nullable.util";
 
 @ObjectType()
 export class User {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   id: string
 
   @Field(() => String, { nullable: true })
-  username: Nullable<string>;
-
-  @Field(() => String, { nullable: true })
-  profileImage: Nullable<string>;
+  username: Nullable<string>
 
   @Field(() => String)
   email: string

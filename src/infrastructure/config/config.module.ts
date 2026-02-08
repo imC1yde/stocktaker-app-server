@@ -1,8 +1,6 @@
 import { ConfigifyModule } from '@itgorillaz/configify'
 import { Module } from '@nestjs/common'
 
-require('dotenv').config()
-
 @Module({
   imports: [
     ConfigifyModule.forRootAsync({
