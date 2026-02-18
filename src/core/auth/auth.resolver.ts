@@ -20,7 +20,6 @@ export class AuthResolver {
   @Mutation(() => UserWithToken, { name: "authorizeUser" })
   public async authorizeUser(@Args("input") input: AuthorizeUserInput):
     Promise<Nullable<User>> {
-    console.log(input)
     return await this.authService.authorize(input)
   }
 }
