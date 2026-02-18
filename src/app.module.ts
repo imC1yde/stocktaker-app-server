@@ -32,7 +32,7 @@ export class AppModule implements NestModule {
     consumer
       .apply(
         graphqlUploadExpress({
-          maxFileSize: 1000,
+          maxFileSize: 8 * 1024 * 1024,
           maxFiles: 2
         })
       )

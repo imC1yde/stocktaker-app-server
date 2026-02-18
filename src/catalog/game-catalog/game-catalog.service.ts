@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
-import { CreateGameInput } from '@src/catalog/game-catalog/inputs/create-game.input'
-import { FindAllGamesFilterInput } from '@src/catalog/game-catalog/inputs/find-all-games.filter.input'
-import { FindAllGamesInput } from '@src/catalog/game-catalog/inputs/find-all-games.input'
-import { UpdateGameInput } from '@src/catalog/game-catalog/inputs/update-game.input'
+import { CreateGameInput } from '@src/catalog/game-catalog/shared/inputs/create-game.input'
+import { FindAllGamesFilterInput } from '@src/catalog/game-catalog/shared/inputs/find-all-games.filter.input'
+import { FindAllGamesInput } from '@src/catalog/game-catalog/shared/inputs/find-all-games.input'
+import { UpdateGameInput } from '@src/catalog/game-catalog/shared/inputs/update-game.input'
 import { mapGame } from '@src/catalog/game-catalog/shared/maps/game.map'
 import { PaginatedGames } from '@src/catalog/game-catalog/shared/types/paginated-games.type'
 import { IDType } from '@src/common/enums/id-type.enum'
@@ -11,7 +11,7 @@ import type { Nullable } from '@src/common/utils/nullable.util'
 import { PrismaService } from '@src/infrastructure/prisma/prisma.service'
 import { RedisService } from '@src/infrastructure/redis/redis.service'
 import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
-import { GameValidatorProvider } from '@src/validation/game/game-validator.provider'
+import { GameValidatorProvider } from '@src/validation/games/game-validator.provider'
 
 @Injectable()
 export class GameCatalogService {
@@ -24,7 +24,7 @@ export class GameCatalogService {
 
   public async create(userId: string, input: CreateGameInput): Promise<Game> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('Invalid user ID format')
+      throw new BadRequestException('Invalid users ID format')
 
     const platforms = this.dataValidator.sanitizeArray(input.platforms)
     const genres = this.dataValidator.sanitizeArray(input.genres)
@@ -78,7 +78,7 @@ export class GameCatalogService {
 
   public async findAll(userId: string, input: FindAllGamesInput, filter?: FindAllGamesFilterInput): Promise<PaginatedGames> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('Invalid user ID format')
+      throw new BadRequestException('Invalid users ID format')
 
     const { page, pageSize } = input
     const skip = pageSize * (page - 1)
@@ -128,7 +128,7 @@ export class GameCatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('Invalid user or inventory ID format')
+      throw new BadRequestException('Invalid users or inventory ID format')
 
     const cacheKey = `game-${userId}:${id}`
     const cachedGame = await this.redis.get<Game>(cacheKey)
@@ -163,7 +163,7 @@ export class GameCatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('Invalid user or inventory ID format')
+      throw new BadRequestException('Invalid users or inventory ID format')
 
     try {
       const inventory = await this.prisma.gameInventory.update({
@@ -195,7 +195,7 @@ export class GameCatalogService {
       !this.dataValidator.validateId(userId, IDType.UUID) ||
       !this.dataValidator.validateId(id, IDType.UUID)
     )
-      throw new BadRequestException('Invalid user or inventory ID format')
+      throw new BadRequestException('Invalid users or inventory ID format')
 
     try {
       const inventory = await this.prisma.gameInventory.delete({

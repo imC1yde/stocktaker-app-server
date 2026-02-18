@@ -1,8 +1,8 @@
 import { UseGuards } from "@nestjs/common"
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { CreateItemInput } from '@src/catalog/user-catalog/inputs/create-item.input'
-import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
-import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
+import { CreateItemInput } from '@src/catalog/user-catalog/shared/inputs/create-item.input'
+import { FindAllItemsInput } from '@src/catalog/user-catalog/shared/inputs/find-all-items.input'
+import { UpdateItemInput } from '@src/catalog/user-catalog/shared/inputs/update-item.input'
 import { PaginatedItems } from '@src/catalog/user-catalog/shared/types/paginated-items.type'
 import { UserCatalogService } from '@src/catalog/user-catalog/user-catalog.service'
 import { CurrentUser } from '@src/common/decorators/current-user.decorator'

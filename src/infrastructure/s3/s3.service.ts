@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { S3Provider } from '@src/infrastructure/s3/s3.provider'
 import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
-import { FileUpload } from 'graphql-upload-ts'
-import { Readable } from 'stream'
+import { FileUpload, ReadStream } from 'graphql-upload-ts'
 
 @Injectable()
 export class S3Service {
@@ -13,7 +12,7 @@ export class S3Service {
 
   public async uploadImage(userId: string, file: FileUpload): Promise<string> {
     const { createReadStream, filename, mimetype } = file
-    const stream: Readable = createReadStream()
+    const stream: ReadStream = createReadStream()
 
     if (!this.dataValidator.validateFile(mimetype, 'image'))
       throw new BadRequestException('Invalid file mimetype!')
@@ -31,7 +30,7 @@ export class S3Service {
 
   public async updateImage(key: string, file: FileUpload): Promise<boolean> {
     const { createReadStream, mimetype } = file
-    const stream: Readable = createReadStream()
+    const stream: ReadStream = createReadStream()
 
     if (!this.dataValidator.validateFile(mimetype, 'image'))
       throw new BadRequestException('Invalid file mimetype!')

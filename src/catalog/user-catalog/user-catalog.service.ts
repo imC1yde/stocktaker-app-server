@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateItemInput } from "@src/catalog/user-catalog/inputs/create-item.input"
-import { FindAllItemsInput } from '@src/catalog/user-catalog/inputs/find-all-items.input'
-import { UpdateItemInput } from '@src/catalog/user-catalog/inputs/update-item.input'
+import { CreateItemInput } from "@src/catalog/user-catalog/shared/inputs/create-item.input"
+import { FindAllItemsInput } from '@src/catalog/user-catalog/shared/inputs/find-all-items.input'
+import { UpdateItemInput } from '@src/catalog/user-catalog/shared/inputs/update-item.input'
 import { PaginatedItems } from '@src/catalog/user-catalog/shared/types/paginated-items.type'
 import { userCatalogItemFields } from "@src/catalog/user-catalog/shared/utils/user-catalog-item-fields.util"
 import { IDType } from '@src/common/enums/id-type.enum'
@@ -100,7 +100,7 @@ export class UserCatalogService {
 
   public async create(userId: string, input: CreateItemInput, image: FileUpload): Promise<UserCatalogItem> {
     if (!this.dataValidator.validateId(userId, IDType.UUID))
-      throw new BadRequestException('Invalid user ID format')
+      throw new BadRequestException('Invalid users ID format')
     const { name, description } = input
 
     const imageKey = await this.s3Service.uploadImage(userId, image)

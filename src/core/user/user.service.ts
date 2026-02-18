@@ -3,12 +3,12 @@ import { IDType } from '@src/common/enums/id-type.enum'
 import { User } from "@src/common/types/user.type"
 import type { Nullable } from '@src/common/utils/nullable.util'
 import { UserForAuth } from '@src/core/shared/types/user-for-auth.type'
-import { CreateUserInput } from '@src/core/user/inputs/create-user.input'
-import type { UpdateUserInput } from '@src/core/user/inputs/update-user.input'
-import { userFields } from '@src/core/user/utils/user-fields.util'
+import { CreateUserInput } from '@src/core/user/shared/inputs/create-user.input'
+import { UpdateUserInput } from '@src/core/user/shared/inputs/update-user.input'
+import { userFields } from '@src/core/user/shared/utils/user-fields.util'
 import { PrismaService } from "@src/infrastructure/prisma/prisma.service"
 import { DataValidatorProvider } from '@src/validation/data/data-validator.provider'
-import { UserValidatorProvider } from '@src/validation/user/user-validator.provider'
+import { UserValidatorProvider } from '@src/validation/users/user-validator.provider'
 
 @Injectable()
 export class UserService {

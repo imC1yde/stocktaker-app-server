@@ -1,4 +1,4 @@
-import { CreateGameInput } from '@src/catalog/game-catalog/inputs/create-game.input'
+import { CreateGameInput } from '@src/catalog/game-catalog/shared/inputs/create-game.input'
 
 export const mapResultToInput = (data: any) => {
   return {

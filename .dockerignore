@@ -1,32 +1,27 @@
-# Dependencies
-node_modules
-pnpm-lock.yaml
-
 # Building
 dist
 build
 .npm
 *.log
 
+# Tests
+test
+
+# Linting and formatting
+eslint.config.mjs
+
 # Configs
-.env
-.env.*
+.env*
 !.env.example
-*.pem
-*.key
 
 # Git
 .git
 .gitignore
+.gitattributes
 
-# IDE
-.vscode
-.idea
-
-# Docker
-Dockerfile
-docker-compose*
-.dockerignore
+# Piqularities
+LICENSE
+README.md
 
 # Prisma
 prisma/migrations

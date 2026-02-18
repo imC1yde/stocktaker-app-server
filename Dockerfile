@@ -1,25 +1,25 @@
 FROM node:22-alpine AS base
-RUN npm install pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-WORKDIR /usr/src/app
-COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
+WORKDIR /usr/app/server
 
 FROM base AS builder
-COPY . .
+COPY ./server/package.json ./server/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
+
+COPY ./server .
 RUN pnpm exec prisma generate
 RUN pnpm run build
 RUN pnpm prune --prod
 
 FROM node:22-alpine AS runner
-WORKDIR /usr/src/app
+RUN apk add --no-cache openssl dos2unix libc6-compat
+WORKDIR /usr/app/server
 
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./package.json
-COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/app/server/dist ./dist
+COPY --from=builder /usr/app/server/node_modules ./node_modules
+COPY --from=builder /usr/app/server/prisma ./prisma
+COPY --from=builder /usr/app/server/pnpm-lock.yaml /usr/app/server/package.json /usr/app/server/external-api.yml ./
 
 EXPOSE ${NEST_PORT}
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD npx prisma migrate deploy && node dist/main.js
