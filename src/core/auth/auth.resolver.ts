@@ -17,9 +17,9 @@ export class AuthResolver {
     return await this.authService.register(input)
   }
 
-  @Mutation(() => UserWithToken, { name: "authorizeUser" })
+  @Mutation(() => UserWithToken, { name: "authorizeUser", nullable: true })
   public async authorizeUser(@Args("input") input: AuthorizeUserInput):
-    Promise<Nullable<User>> {
+    Promise<Nullable<UserWithToken>> {
     return await this.authService.authorize(input)
   }
 }

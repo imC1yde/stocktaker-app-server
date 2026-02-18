@@ -116,7 +116,7 @@ export class GameCatalogService {
     const totalPages = Math.ceil(count / pageSize)
 
     return {
-      items: inventory,
+      data: inventory,
       totalPages: totalPages,
       totalCount: count,
       hasNextPage: page < totalPages
@@ -158,12 +158,14 @@ export class GameCatalogService {
     return game
   }
 
-  public async update(userId: string, id: string, input: UpdateGameInput): Promise<Game> {
+  public async update(userId: string, input: UpdateGameInput): Promise<Game> {
     if (
       !this.dataValidator.validateId(userId, IDType.UUID) ||
-      !this.dataValidator.validateId(id, IDType.UUID)
+      !this.dataValidator.validateId(input.id, IDType.UUID)
     )
       throw new BadRequestException('Invalid users or inventory ID format')
+
+    const { id, isCompleted } = input
 
     try {
       const inventory = await this.prisma.gameInventory.update({
@@ -174,7 +176,7 @@ export class GameCatalogService {
           }
         },
         data: {
-          isCompleted: input.isCompleted
+          isCompleted: isCompleted
         },
         include: {
           game: true

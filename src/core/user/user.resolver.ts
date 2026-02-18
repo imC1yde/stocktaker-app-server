@@ -13,8 +13,9 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation(() => User, { name: 'updateUser' })
-  public async updateUser(@CurrentUser() user: IUserPayload,
-                          @Args('input') input: UpdateUserInput
+  public async updateUser(
+    @CurrentUser() user: IUserPayload,
+    @Args('input') input: UpdateUserInput
   ): Promise<User> {
     return await this.userService.update(user.sub, input)
   }

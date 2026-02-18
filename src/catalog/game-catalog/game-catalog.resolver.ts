@@ -21,7 +21,7 @@ export class GameCatalogResolver {
     private readonly rawgService: RawgDomainService
   ) {}
 
-  @Query(() => [ PaginatedGames ], { name: 'findAllGames' })
+  @Query(() => PaginatedGames, { name: 'findAllGames' })
   public async findAll(
     @CurrentUser() user: IUserPayload,
     @Args('input') input: FindAllGamesInput,
@@ -30,7 +30,7 @@ export class GameCatalogResolver {
     return await this.gameCatalogService.findAll(user.sub, input, filter)
   }
 
-  @Query(() => Game, { name: 'findGameById' })
+  @Query(() => Game, { name: 'findGameById', nullable: true })
   public async findById(
     @CurrentUser() user: IUserPayload,
     @Args('id') id: string
@@ -41,10 +41,9 @@ export class GameCatalogResolver {
   @Mutation(() => Game, { name: 'updateGame' })
   public async update(
     @CurrentUser() user: IUserPayload,
-    @Args('id') id: string,
     @Args('input') input: UpdateGameInput
   ): Promise<Game> {
-    return await this.gameCatalogService.update(user.sub, id, input)
+    return await this.gameCatalogService.update(user.sub, input)
   }
 
   @Mutation(() => Game, { name: 'deleteGame' })

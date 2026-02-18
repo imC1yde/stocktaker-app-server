@@ -5,6 +5,10 @@ import { IsOptional, IsString, MaxLength } from 'class-validator'
 @InputType()
 export class UpdateItemInput {
   @IsString()
+  @Field(() => String)
+  readonly id: string
+
+  @IsString()
   @IsOptional()
   @MaxLength(128)
   @Field(() => String, { nullable: true })

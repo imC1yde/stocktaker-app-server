@@ -19,15 +19,15 @@ export class UserCatalogResolver {
     private readonly userCatalogService: UserCatalogService
   ) {}
 
-  @Query(() => [ PaginatedItems ], { name: 'getAllUserItems' })
+  @Query(() => PaginatedItems, { name: 'getAllUserItems' })
   public async findAll(
     @CurrentUser() user: IUserPayload,
-    @Args('filter', { nullable: true }) input: FindAllItemsInput
+    @Args('input', { nullable: true }) input: FindAllItemsInput
   ): Promise<PaginatedItems> {
     return await this.userCatalogService.findAll(user.sub, input)
   }
 
-  @Query(() => UserCatalogItem, { name: 'getItemById' })
+  @Query(() => UserCatalogItem, { name: 'getItemById', nullable: true })
   public async findById(
     @CurrentUser() user: IUserPayload,
     @Args('id') id: string
@@ -48,11 +48,10 @@ export class UserCatalogResolver {
   @Mutation(() => UserCatalogItem, { name: 'updateUserItem' })
   public async update(
     @CurrentUser() user: IUserPayload,
-    @Args('id') id: string,
     @Args('input') input: UpdateItemInput,
     @Args('image', { type: () => GraphQLUpload }) image: FileUpload
   ): Promise<UserCatalogItem> {
-    return await this.userCatalogService.update(user.sub, id, input, image)
+    return await this.userCatalogService.update(user.sub, input, image)
   }
 
   @Mutation(() => UserCatalogItem, { name: 'deleteUserItem' })

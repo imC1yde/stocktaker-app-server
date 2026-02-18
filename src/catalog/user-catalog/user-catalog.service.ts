@@ -60,7 +60,7 @@ export class UserCatalogService {
       }))
 
     return {
-      items: mappedItems,
+      data: mappedItems,
       totalCount: count,
       totalPages: totalPages,
       hasNextPage: page < totalPages
@@ -122,14 +122,14 @@ export class UserCatalogService {
     return item
   }
 
-  public async update(userId: string, id: string, input: UpdateItemInput, image: FileUpload): Promise<UserCatalogItem> {
+  public async update(userId: string, input: UpdateItemInput, image: FileUpload): Promise<UserCatalogItem> {
     if (
-      !this.dataValidator.checkForAnyValue<UpdateItemInput>(input) ||
       !this.dataValidator.validateId(userId, IDType.UUID) ||
-      !this.dataValidator.validateId(id, IDType.UUID)
+      !this.dataValidator.validateId(input.id, IDType.UUID)
     )
       throw new BadRequestException('Invalid ID format or input is empty')
-    const { name, description } = input
+
+    const { id, name, description } = input
 
     try {
       const item = await this.prisma.item.update({
