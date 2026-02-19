@@ -69,8 +69,6 @@ export class GameCatalogService {
       }
     })
 
-    console.log(game.id)
-
     return mapGame({
       data: game,
       isCompleted: inventory.isCompleted
