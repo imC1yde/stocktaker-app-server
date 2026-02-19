@@ -9,7 +9,7 @@ export class GameListResponse {
   @Field(() => String)
   name: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   backgroundImage: string
 
   @Field(() => Boolean)

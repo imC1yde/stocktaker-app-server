@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { GetRawgGamesInput } from '@src/catalog/game-catalog/rawg/inputs/get-rawg-games.input'
+import { Args, Query, Resolver } from '@nestjs/graphql'
 import { RawgDomainService } from '@src/catalog/game-catalog/rawg/rawg-domain.service'
+import { GetRawgGamesInput } from '@src/catalog/game-catalog/rawg/shared/inputs/get-rawg-games.input'
 import { mapRawgList } from '@src/catalog/game-catalog/shared/maps/rawg-list.map'
 import { RawgGame } from '@src/catalog/game-catalog/shared/types/rawg-game.type'
 import { AuthGuard } from '@src/common/guards/auth.guard'
@@ -12,7 +12,7 @@ import { AuthGuard } from '@src/common/guards/auth.guard'
 export class RawgDomainResolver {
   constructor(private readonly rawgService: RawgDomainService) {}
 
-  @Mutation(() => [ RawgGame ], { name: 'getRawgGames' })
+  @Query(() => [ RawgGame ], { name: 'getRawgGames' })
   public async getRawgGames(@Args('input') input: GetRawgGamesInput): Promise<RawgGame[]> {
     const data = await this.rawgService.getAll(input)
 

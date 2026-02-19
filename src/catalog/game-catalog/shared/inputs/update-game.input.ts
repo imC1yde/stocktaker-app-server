@@ -5,7 +5,7 @@ import { IsBoolean, IsNotEmpty, IsString } from 'class-validator'
 export class UpdateGameInput {
   @IsString()
   @IsNotEmpty()
-  @Field(() => Boolean)
+  @Field(() => String)
   readonly id: string
 
   @IsBoolean()

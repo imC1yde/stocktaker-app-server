@@ -4,6 +4,7 @@ import { FindAllGamesFilterInput } from '@src/catalog/game-catalog/shared/inputs
 import { FindAllGamesInput } from '@src/catalog/game-catalog/shared/inputs/find-all-games.input'
 import { UpdateGameInput } from '@src/catalog/game-catalog/shared/inputs/update-game.input'
 import { mapGame } from '@src/catalog/game-catalog/shared/maps/game.map'
+import { mapGamesList } from '@src/catalog/game-catalog/shared/maps/games-list.map'
 import { PaginatedGames } from '@src/catalog/game-catalog/shared/types/paginated-games.type'
 import { IDType } from '@src/common/enums/id-type.enum'
 import { Game } from '@src/common/types/game.type'
@@ -108,15 +109,23 @@ export class GameCatalogService {
       }),
       this.prisma.gameInventory.count({
         where: {
-          userId: userId
+          userId: userId,
+          game: {
+            slug: filter?.name ? { contains: filter.name, mode: 'insensitive' } : undefined,
+            rating: filter?.rating ? { gte: filter.rating } : undefined,
+            esrbRating: filter?.esrbRating ? { equals: filter.esrbRating } : undefined,
+            genres: filter?.genres?.length ? { hasSome: filter.genres } : undefined,
+            platforms: filter?.platforms?.length ? { hasSome: filter.platforms } : undefined
+          }
         }
       })
     ])
 
     const totalPages = Math.ceil(count / pageSize)
+    const mappedGame = mapGamesList(inventory)
 
     return {
-      data: inventory,
+      data: mappedGame,
       totalPages: totalPages,
       totalCount: count,
       hasNextPage: page < totalPages

@@ -1,11 +1,11 @@
 import { Field, InputType, Int } from '@nestjs/graphql'
-import { IsInt, IsNotEmpty, IsString } from 'class-validator'
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 @InputType()
 export class GetRawgGamesInput {
   @IsString()
-  @IsNotEmpty()
-  @Field(() => String)
+  @IsOptional()
+  @Field(() => String, { nullable: true })
   readonly search: string
 
   @IsInt()

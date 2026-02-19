@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { GetRawgGamesInput } from '@src/catalog/game-catalog/rawg/inputs/get-rawg-games.input'
+import { GetRawgGamesInput } from '@src/catalog/game-catalog/rawg/shared/inputs/get-rawg-games.input'
 import { IRawgContent } from '@src/catalog/game-catalog/shared/interfaces/rawg-content.interface'
 import { RawgConfig } from '@src/infrastructure/config/rawg-api.config'
 import { RawgClient } from '@src/infrastructure/integrations/rawg-api/rawg.client'
